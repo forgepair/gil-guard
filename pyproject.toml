@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gil-guard"
+version = "0.1.0"
+description = "Catch silent GIL re-enablement on free-threaded Python the moment it happens"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Framework :: Pytest",
+  "License :: OSI Approved :: MIT License",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.entry-points.pytest11]
+gil_guard = "gil_guard.pytest_plugin"
+
+[project.urls]
+Repository = "https://github.com/TVick64889/gil-guard"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gil_guard"]
