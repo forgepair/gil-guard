@@ -48,14 +48,23 @@ re-enables the GIL on import — free-threading support only landed in the
 7.0 beta. This is the confirmed trigger the test suite runs against, not a
 simulation.
 
-## Why this exists
+## Why I built this
 
-Two serious engineering teams hit this same failure independently and
-built their own detection from scratch within days of each other: NumPy's
-in-house test-suite check, and PyTorch's TorchCodec team
-(`meta-pytorch/torchcodec#1701`, filed 2026-09-09). Free-threaded Python is
-new enough that most of the C-extension ecosystem hasn't caught up yet —
-this will keep recurring for as long as that takes.
+I was moving a test suite over to Python's free-threaded build and spent
+an afternoon chasing tests that got slower and flakier for no visible
+reason — no error, no failed assertion, just quietly worse. A C extension
+imported early in the suite didn't declare free-threading support and had
+silently flipped the GIL back on for the rest of the process. The only
+trace was a `RuntimeWarning` I'd scrolled straight past.
+
+Once I went looking, I found NumPy had already built this exact check
+into its own test suite by hand (`numpy/conftest.py`), and PyTorch's
+TorchCodec team had filed almost the identical bug report days earlier
+(`meta-pytorch/torchcodec#1701`). Two serious teams independently building
+the same narrow fix, days apart, felt like a sign this belonged in a
+shared package instead of getting reinvented a third time. Free-threaded
+Python is new enough that most of the C-extension ecosystem hasn't caught
+up yet — this will keep recurring for as long as that takes.
 
 ## License
 
