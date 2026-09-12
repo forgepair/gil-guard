@@ -1,0 +1,42 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  standard:
+    name: standard (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -e ".[test]"
+      - run: pytest -v
+
+  free-threaded:
+    name: free-threaded (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13t", "3.14t"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - run: pip install -e ".[test]"
+      # lxml < 7.0 has no free-threaded wheel (that's the whole point of the
+      # regression this test suite catches) -- build it from source instead.
+      - run: sudo apt-get update && sudo apt-get install -y libxml2-dev libxslt-dev
+      - run: pip install "lxml<7.0" --no-binary lxml
+      - run: python -c "import sys; assert not sys._is_gil_enabled(), 'not actually running free-threaded'"
+      - run: pytest -v
