@@ -22,7 +22,7 @@ test = ["pytest>=8"]
 gil_guard = "gil_guard.pytest_plugin"
 
 [project.urls]
-Repository = "https://github.com/TVick64889/gil-guard"
+Repository = "https://github.com/forgepair/gil-guard"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/gil_guard"]
